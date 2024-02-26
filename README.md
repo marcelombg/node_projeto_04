@@ -50,3 +50,12 @@
     },
 17 - npm i vite-tsconfig-paths -D
 18 - npm i eslint @rocketseat/eslint-config -D
+19 - package.json: 
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  }
+20 - npm i eslint-plugin-vitest-globals -D
+21 - npm i @faker-js/faker -D
