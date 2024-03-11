@@ -1,6 +1,6 @@
-import { UniqueEntityID } from '@/domain/entities/unique-entity-id';
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { AnswerComment } from '../../enterprise/entitites/answer-comment';
-import { AnswerRespository } from '../repositories/answers-repository';
+import { AnswersRespository } from '../repositories/answers-repository';
 import { AnswerCommentsRespository } from '../repositories/answer-comments-repository';
 import { Either, left, right } from '@/core/either';
 import { ResourceNotFoundError } from './erros/resource-not-found-error';
@@ -15,7 +15,7 @@ type CommentOnAnswerUseCaseRequestResponse = Either<ResourceNotFoundError, {answ
 
 export class CommentOnAnswerUseCase {
   constructor(
-    private answersRepository: AnswerRespository,
+    private answersRepository: AnswersRespository,
     private answerCommentsRepository: AnswerCommentsRespository
   ) { }
 

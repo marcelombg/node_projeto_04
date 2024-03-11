@@ -1,5 +1,4 @@
-import { makeAnswer } from 'test/factories/make-answer'
-import { UniqueEntityID } from '@/domain/entities/unique-entity-id'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { FetchAnswerCommentsUseCase } from './fetch-answer-comments'
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
 import { InMemoryAnswerCommentsRepository } from 'test/repository/in-memory-answers-comments-repository'

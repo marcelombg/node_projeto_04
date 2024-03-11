@@ -3,12 +3,17 @@ import { Question } from '../../enterprise/entitites/question';
 import { QuestionsRespository } from '../repositories/questions-repository';
 import { ResourceNotFoundError } from './erros/resource-not-found-error';
 import { NotAllowedError } from './erros/not-allowed-error';
+import { QuestionAttachmentList } from '../../enterprise/entitites/question-attachment-list';
+import { QuestionAttachment } from '../../enterprise/entitites/question-attachment';
+import { QuestionAttachmentsRespository } from '../repositories/question-attachments-repository';
+import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 
 interface EditQuestionUseCaseRequest {
   authorId: string
   questionId: string
   title: string
   content: string
+  attachmentsIds: string[]
 }
 
 type EditQuestionUseCaseRequestResponse = Either<ResourceNotFoundError | NotAllowedError, {
@@ -16,13 +21,17 @@ type EditQuestionUseCaseRequestResponse = Either<ResourceNotFoundError | NotAllo
 }>
 
 export class EditQuestionUseCase {
-  constructor(private questionsRepository: QuestionsRespository) {}
+  constructor(
+    private questionsRepository: QuestionsRespository,
+    private questionAttachmentsRepository: QuestionAttachmentsRespository,
+    ) {}
 
   async execute({
     authorId,
     questionId,
     title,
-    content
+    content,
+    attachmentsIds
   }: EditQuestionUseCaseRequest) : Promise<EditQuestionUseCaseRequestResponse> {
     const question = await this.questionsRepository.findById(questionId)
     
@@ -34,6 +43,20 @@ export class EditQuestionUseCase {
       return left(new NotAllowedError())
     }
 
+    const currentQuestionAttachments = await this.questionAttachmentsRepository.findManyByQuestionId(questionId)
+
+    const questionAttachmentList = new QuestionAttachmentList(currentQuestionAttachments)
+
+    const questionAttachments = attachmentsIds.map((attachmentId) => {
+      return QuestionAttachment.create({
+      attachmentId: new UniqueEntityID(attachmentId),
+      questionId: question.id
+      })
+    })
+
+    questionAttachmentList.update(questionAttachments)
+
+    question.attachments = questionAttachmentList
     question.title = title
     question.content = content
 

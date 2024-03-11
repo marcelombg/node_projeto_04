@@ -1,13 +1,18 @@
 import { Either, left, right } from '@/core/either';
 import { Answer } from '../../enterprise/entitites/answer';
-import { AnswerRespository } from '../repositories/answers-repository';
+import { AnswersRespository } from '../repositories/answers-repository';
 import { ResourceNotFoundError } from './erros/resource-not-found-error';
 import { NotAllowedError } from './erros/not-allowed-error';
+import { AnswerAttachmentList } from '../../enterprise/entitites/answer-attachment-list';
+import { AnswerAttachment } from '../../enterprise/entitites/answer-attachment';
+import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { AnswerAttachmentsRespository } from '../repositories/answer-attachments-repository';
 
 interface EditAnswerUseCaseRequest {
   authorId: string
   answerId: string
   content: string
+  attachmentsIds: string[]
 }
 
 type EditAnswerUseCaseRequestResponse = Either<ResourceNotFoundError | NotAllowedError, {
@@ -15,12 +20,16 @@ type EditAnswerUseCaseRequestResponse = Either<ResourceNotFoundError | NotAllowe
 }>
 
 export class EditAnswerUseCase {
-  constructor(private answersRepository: AnswerRespository) {}
+  constructor(
+    private answersRepository: AnswersRespository,
+    private answerAttachmentsRepository: AnswerAttachmentsRespository
+  ) {}
 
   async execute({
     authorId,
     answerId,
-    content
+    content,
+    attachmentsIds
   }: EditAnswerUseCaseRequest) : Promise<EditAnswerUseCaseRequestResponse> {
     const answer = await this.answersRepository.findById(answerId)
     
@@ -31,6 +40,21 @@ export class EditAnswerUseCase {
     if(authorId != answer.authorId.toString()){
       return left(new NotAllowedError())
     }
+
+    const currentAnswerAttachments = await this.answerAttachmentsRepository.findManyByAnswerId(answerId)
+
+    const answerAttachmentList = new AnswerAttachmentList(currentAnswerAttachments)
+
+    const answerAttachments = attachmentsIds.map((attachmentId) => {
+      return AnswerAttachment.create({
+      attachmentId: new UniqueEntityID(attachmentId),
+      answerId: answer.id
+      })
+    })
+
+    answerAttachmentList.update(answerAttachments)
+
+    answer.attachments = answerAttachmentList
 
     answer.content = content
 

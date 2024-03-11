@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 import { Question } from '../../enterprise/entitites/question'
-import { AnswerRespository } from '../repositories/answers-repository'
 import { QuestionsRespository } from '../repositories/questions-repository'
 import { ResourceNotFoundError } from './erros/resource-not-found-error'
 import { NotAllowedError } from './erros/not-allowed-error'
+import { AnswersRespository } from '../repositories/answers-repository'
 
 interface ChooseQuestionBestAnswerUseCaseRequest {
   authorId: string
@@ -15,7 +15,7 @@ type ChooseQuestionBestAnswerUseCaseResponse = Either<ResourceNotFoundError | No
 export class ChooseQuestionBestAnswerUseCase {
   constructor(
     private questionsRepository: QuestionsRespository,
-    private answersRepository: AnswerRespository
+    private answersRepository: AnswersRespository
   ) { }
 
   async execute({
