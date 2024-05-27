@@ -3,7 +3,7 @@ import { AnswerComment } from '../../enterprise/entitites/answer-comment';
 import { AnswersRespository } from '../repositories/answers-repository';
 import { AnswerCommentsRespository } from '../repositories/answer-comments-repository';
 import { Either, left, right } from '@/core/either';
-import { ResourceNotFoundError } from './erros/resource-not-found-error';
+import { ResourceNotFoundError } from '../../../../core/errors/errors/resource-not-found-error';
 
 interface CommentOnAnswerUseCaseRequest {
   authorId: string
